@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M1 · DevCloud 三环节操作教程</title>
+<style>
+  :root{
+    --ink:#1a1a1a; --muted:#666; --line:#e2e6ea; --brand:#185FA5;
+    --bg-soft:#f5f8fc; --warn:#b45309; --warn-bg:#fff7ed;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); line-height:1.75; margin:0;
+    background:#fff;
+  }
+  .wrap{max-width:900px; margin:0 auto; padding:48px 56px;}
+  h1{font-size:26px; color:var(--brand); border-bottom:3px solid var(--brand); padding-bottom:14px; margin-top:0;}
+  h2{font-size:20px; color:var(--brand); margin-top:38px; padding-left:12px; border-left:5px solid var(--brand);}
+  h3{font-size:16px; color:#0f3d63; margin-top:26px;}
+  p{margin:10px 0;}
+  strong{color:#0f3d63;}
+  code{
+    background:var(--bg-soft); color:#0b5cad; padding:2px 6px;
+    border-radius:4px; font-family:Consolas,Monaco,monospace; font-size:13px;
+  }
+  pre{background:var(--bg-soft); padding:14px 18px; border-radius:8px; overflow:auto; border:1px solid var(--line);}
+  pre code{background:none; padding:0; color:#243b53;}
+  table{border-collapse:collapse; width:100%; margin:16px 0; font-size:14px;}
+  th,td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top;}
+  th{background:var(--bg-soft); color:#0f3d63; font-weight:600;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  blockquote{
+    margin:14px 0; padding:12px 18px; background:var(--warn-bg);
+    border-left:4px solid var(--warn); color:#7c2d12; border-radius:0 6px 6px 0;
+  }
+  blockquote p{margin:4px 0;}
+  /* 截图提示 */
+  p:has(strong), li:has(strong){}
+  .wrap hr{border:none; border-top:1px dashed var(--line); margin:32px 0;}
+  @media print{
+    .wrap{max-width:none; padding:0; }
+    body{font-size:12pt;}
+    h2{page-break-after:avoid;}
+    table,blockquote{page-break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>M1 · DevCloud / CodeArts 三环节操作教程（保姆级）</h1>
+<blockquote>
+<p>适用：华为云 CodeArts（原 DevCloud）· 评分对应「规划 5% + 工作项 5% + 迭代 5% = 15%」
+配套：<code>requirements.md</code>（12 条用户故事）· 日期：2026-10-23</p>
+</blockquote>
+<h2>0 开始前准备</h2>
+<ol>
+<li><strong>账号</strong>：用华为云账号登录 <code>codearts.huaweicloud.com</code>（或从华为云控制台搜「CodeArts」进入软件开发生产线）。</li>
+<li><strong>开通</strong>：首次使用需开通 CodeArts 套餐（选「体验版」即可，50 人/1 个月）。</li>
+<li><strong>项目命名</strong>：统一用「个人博客」，便于答辩与截图时识别。</li>
+</ol>
+<blockquote>
+<p>说明：菜单名称可能随版本略有差异，本文按当前版本「工作项 &gt; 需求管理 &gt; 规划/工作项/迭代」的路径编写；若你的界面用「工作」，以实际页面为准，层级逻辑完全一致。</p>
+</blockquote>
+<h2>1 环节零：新建 Scrum 项目</h2>
+<ol>
+<li>进入 CodeArts 工作台首页，点 <strong>新建项目</strong>。</li>
+<li>项目模板选 <strong>Scrum</strong>（敏捷迭代），<strong>不要</strong>选「看板」或其他模板。</li>
+<li>项目名称填 <strong>个人博客</strong>，其余默认，点 <strong>确定</strong>。</li>
+<li>项目创建成功后自动进入项目页。</li>
+</ol>
+<p><strong>截图</strong>：项目创建成功页（能看到「个人博客」项目名）→ 存为 <code>M1-01-新建项目.png</code></p>
+<h2>2 环节一：规划 —— 思维导图拆需求（5%）</h2>
+<p>目标是产出一张「Epic → Feature → Story」三级思维导图，保存后 Story 会自动进入工作项。</p>
+<h3>2.1 打开思维导图</h3>
+<ol>
+<li>左侧导航点 <strong>工作项 &gt; 需求管理 &gt; 规划</strong>。</li>
+<li>点 <strong>规划 &gt; 思维导图规划</strong>。</li>
+<li>弹窗填「规划名称」：<strong>个人博客需求规划</strong>，点 <strong>确定</strong>。</li>
+</ol>
+<h3>2.2 搭出三级结构</h3>
+<p>思维导图默认有一个根节点。按下面的层级逐个添加：</p>
+<ol>
+<li><strong>根节点</strong>改名或直接作为 <strong>Epic：个人博客系统</strong>。</li>
+<li>在 Epic 上<strong>右键 → 添加子工作项</strong>，类型选 <strong>Feature</strong>，依次建 5 个 Feature：
+   - 用户模块
+   - 文章模块
+   - 评论模块
+   - 后台管理
+   - 特色功能（自研）</li>
+<li>在每个 Feature 上<strong>右键 → 添加子工作项</strong>，类型选 <strong>Story</strong>，按下表填入。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Story（对应用户故事编号）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用户模块</td>
+<td>用户登录（US-01）</td>
+</tr>
+<tr>
+<td>文章模块</td>
+<td>发表文章（US-02）、编辑文章（US-03）、删除文章（US-04）、文章列表（US-06）、分类浏览（US-07）、标签浏览（US-08）</td>
+</tr>
+<tr>
+<td>评论模块</td>
+<td>发表评论（US-05）、评论管理（US-10）</td>
+</tr>
+<tr>
+<td>后台管理</td>
+<td>后台管理（US-09）</td>
+</tr>
+<tr>
+<td>特色功能（自研）</td>
+<td>暗黑模式切换（US-11）、文章点赞（US-12）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>要求：层级必须 ≥3 层（Epic → Feature → Story），共 12 条 Story，三大作业点名功能（登录/发文/评论）必须出现。</p>
+</blockquote>
+<p><strong>截图</strong>：思维导图全貌（三级展开、能看到全部 Story）→ <code>M1-02-思维导图.png</code></p>
+<h3>2.3 确认 Story 已生成到工作项</h3>
+<p>保存后回到 <strong>工作项 &gt; 需求管理 &gt; 工作项</strong>，确认 12 条 Story 都已自动出现。</p>
+<h2>3 环节二：工作项 —— 逐条补全字段（5%）</h2>
+<p>进入 <strong>工作项 &gt; 需求管理 &gt; 工作项</strong>，逐条点开每个 Story，补全以下字段。<strong>缺一项即视为该工作项未完成</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>填法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>描述</td>
+<td>用「作为…我想要…以便…」写清，可直接从 requirements.md 复制</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0 核心功能 → 高；P1 基础要素 → 中；P2 特色功能 → 低</td>
+</tr>
+<tr>
+<td>重要程度（严重程度）</td>
+<td>核心功能 → 关键/严重；基础 → 主要；特色 → 次要</td>
+</tr>
+<tr>
+<td>处理人</td>
+<td>秦庆泽或吴凯阳（按分工）</td>
+</tr>
+<tr>
+<td>开始日期 / 结束日期</td>
+<td>落在 M3~M4 迭代周期内，不能空</td>
+</tr>
+<tr>
+<td>预计工时</td>
+<td>估个数（如 4h / 8h）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>截图</strong>：
+- 工作项列表（能看出 12 条 Story）→ <code>M1-03-工作项列表.png</code>
+- 任意一条 Story 详情页（显示优先级、日期、工时、重要程度都已填）→ <code>M1-04-Story字段.png</code></p>
+<h2>4 环节三：迭代 —— 建迭代并排入 Story（5%）</h2>
+<h3>4.1 创建两个迭代</h3>
+<ol>
+<li>进入 <strong>工作项 &gt; 需求管理 &gt; 迭代</strong>。</li>
+<li>点 <strong>创建迭代</strong>，建 <strong>迭代 1</strong>：
+   - 名称：迭代1-核心功能
+   - 计划时间：落在 M3 周（如 11-09 ~ 11-15）</li>
+<li>再建 <strong>迭代 2</strong>：
+   - 名称：迭代2-基础与特色
+   - 计划时间：落在 M4 周（如 11-16 ~ 11-22）</li>
+</ol>
+<h3>4.2 把 Story 排进迭代</h3>
+<ol>
+<li>在迭代页的「未规划工作项」里，选 Story。</li>
+<li>编辑其 <strong>迭代（Sprint）</strong> 字段，选入对应迭代；或直接拖入迭代。</li>
+<li>分配原则：<strong>优先级高 → 迭代 1，优先级低 → 迭代 2</strong>。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>迭代</th>
+<th>排入 Story</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>迭代 1</td>
+<td>US-01~US-05（登录/发文/编辑/删文/评论）</td>
+</tr>
+<tr>
+<td>迭代 2</td>
+<td>US-06~US-12（列表/分类/标签/后台/评论管理/暗黑/点赞）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>截图</strong>：迭代看板（能看到迭代 1、迭代 2 各自排入了 Story）→ <code>M1-05-迭代看板.png</code></p>
+<h2>5 截图清单（M1 交证据前自查）</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>截图内容</th>
+<th>文件名</th>
+<th>对应评分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>新建 Scrum 项目成功</td>
+<td>M1-01-新建项目.png</td>
+<td>规划</td>
+</tr>
+<tr>
+<td>2</td>
+<td>思维导图三级结构</td>
+<td>M1-02-思维导图.png</td>
+<td>规划 5%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>工作项列表 12 条 Story</td>
+<td>M1-03-工作项列表.png</td>
+<td>工作项 5%</td>
+</tr>
+<tr>
+<td>4</td>
+<td>单条 Story 字段填齐</td>
+<td>M1-04-Story字段.png</td>
+<td>工作项 5%</td>
+</tr>
+<tr>
+<td>5</td>
+<td>迭代看板</td>
+<td>M1-05-迭代看板.png</td>
+<td>迭代 5%</td>
+</tr>
+</tbody>
+</table>
+<p>全部存到 <code>软工大作业/evidence/M1/</code>。</p>
+<h2>6 常见坑</h2>
+<ol>
+<li><strong>项目模板选错</strong>：必须选 Scrum，选成看板就没有思维导图和迭代。</li>
+<li><strong>思维导图只建了两层</strong>：Epic→Feature 不算完，必须到 Story 层。</li>
+<li><strong>Story 字段漏填</strong>：日期、工时、优先级最容易漏，逐条核对。</li>
+<li><strong>迭代没排 Story</strong>：建了迭代但 Story 还在「未规划」里，等于没做。</li>
+<li><strong>截图没编号</strong>：截图随手存难追溯，按上表命名，报告引用时才不乱。</li>
+<li><strong>菜单找不到</strong>：不同版本叫「工作」或「工作项」，进项目后看左侧导航实际名称。</li>
+</ol>
+<h2>7 完成判据</h2>
+<p>M1 三环节完成 = 以下全部满足：</p>
+<ol>
+<li>Scrum 项目「个人博客」已创建；</li>
+<li>思维导图 ≥3 层，12 条 Story 齐全；</li>
+<li>每条 Story 字段填齐（描述/优先级/日期/工时/重要程度）；</li>
+<li>2 个迭代已建，Story 按优先级排入；</li>
+<li>5 张截图归档到 <code>软工大作业/evidence/M1/</code>。</li>
+</ol>
+</div>
+</body>
+</html>
