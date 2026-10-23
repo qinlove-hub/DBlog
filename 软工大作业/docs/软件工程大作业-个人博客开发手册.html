@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人博客大作业 · 敏捷DevOps开发手册</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --ink:#1a2233; --muted:#5b6472;
+    --line:#e3e8f0; --brand:#4f46e5; --brand2:#6366f1; --brandbg:#eef2ff;
+    --ok:#16a34a; --okbg:#ecfdf3; --warn:#b45309; --warnbg:#fffbeb;
+    --danger:#dc2626; --dangerbg:#fef2f2; --code:#0f172a;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.75;font-size:15px;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 80px}
+  /* 封面 */
+  .hero{background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 60%,#a855f7 100%);color:#fff;
+    padding:56px 20px 48px;margin-bottom:28px}
+  .hero .inner{max-width:920px;margin:0 auto}
+  .hero .tag{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+    padding:3px 12px;border-radius:999px;font-size:12px;letter-spacing:1px;margin-bottom:16px}
+  .hero h1{margin:0 0 12px;font-size:30px;line-height:1.35;font-weight:800}
+  .hero p{margin:4px 0;opacity:.92;font-size:14.5px}
+  .hero .meta{margin-top:18px;font-size:12.5px;opacity:.85}
+  /* TOC */
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin:0 0 28px}
+  .toc h2{margin:0 0 12px;font-size:15px;color:var(--brand);letter-spacing:1px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:34px}
+  .toc li{margin:4px 0;break-inside:avoid}
+  .toc a{color:var(--ink);text-decoration:none}
+  .toc a:hover{color:var(--brand)}
+  /* 章节 */
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:30px 32px;margin-bottom:24px}
+  h2.sec{font-size:22px;margin:0 0 6px;padding-bottom:10px;border-bottom:3px solid var(--brand);display:flex;align-items:center;gap:10px}
+  h2.sec .num{background:var(--brand);color:#fff;width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto}
+  h3{font-size:17px;margin:26px 0 10px;color:#3b3f8f}
+  h4{font-size:15.5px;margin:20px 0 8px;color:#333}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  strong{color:#111}
+  /* 表格 */
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13.5px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#f1f3fb;color:#2b2f4c;font-weight:700;white-space:nowrap}
+  tr:nth-child(even) td{background:#fafbfe}
+  table.center th,table.center td{text-align:center}
+  /* 强调框 */
+  .box{border-radius:10px;padding:14px 16px;margin:14px 0;font-size:14px;border:1px solid}
+  .tip{background:var(--okbg);border-color:#b7e4c7;color:#14532d}
+  .warn{background:var(--warnbg);border-color:#fde68a;color:#78350f}
+  .danger{background:var(--dangerbg);border-color:#fecaca;color:#7f1d1d}
+  .info{background:var(--brandbg);border-color:#c7d2fe;color:#312e81}
+  .box .ttl{font-weight:800;display:block;margin-bottom:4px}
+  /* 代码块 */
+  pre{background:var(--code);color:#e2e8f0;border-radius:10px;padding:16px 18px;overflow-x:auto;font-size:13px;line-height:1.6}
+  pre code{font-family:"SF Mono",Consolas,"Courier New",monospace;white-space:pre}
+  code{font-family:"SF Mono",Consolas,"Courier New",monospace;background:#eef1f6;color:#c2410c;padding:1px 6px;border-radius:5px;font-size:13px}
+  pre code{background:none;color:inherit;padding:0}
+  /* 阶段卡 */
+  .phase{border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:16px 0;background:#fcfcff}
+  .phase .head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .phase .head b{font-size:16px;color:var(--brand)}
+  .phase .week{background:var(--brandbg);color:var(--brand);font-size:12px;padding:2px 10px;border-radius:999px;font-weight:700}
+  .phase .owner{font-size:12.5px;color:var(--muted)}
+  .phase table{font-size:13px}
+  .badge{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:6px;font-weight:700;margin-left:6px}
+  .b-a{background:#fee2e2;color:#b91c1c}
+  .b-b{background:#dcfce7;color:#15803d}
+  .pill{display:inline-block;background:#eef2ff;color:#4f46e5;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700}
+  .muted{color:var(--muted);font-size:13px}
+  .kbd{background:#fff;border:1px solid #cbd5e1;border-bottom-width:2px;border-radius:5px;padding:0 6px;font-size:12px;color:#334155}
+  @media print{
+    body{background:#fff}
+    .hero{background:#4f46e5 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    section{break-inside:avoid-page}
+  }
+  @media(max-width:680px){ .toc ol{columns:1} }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <span class="tag">软件工程 · 敏捷DevOps开发方法 · 大作业</span>
+    <h1>个人博客软件项目 —— 开发手册 &amp; AI 协作指南</h1>
+    <p>从写需求文档到项目收尾的完整流程 · 9 周倒排计划 · 两人分工 · 逐阶段保姆级操作 · 高效 AI 提示词模板</p>
+    <p class="meta">团队：秦庆泽 + 队友 · 平台：华为云 DevCloud + 华为 ECS · 截止：2026-12-27（可平移）· 版本 v1.0（2026-10-23）</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <h2>目录</h2>
+    <ol>
+      <li><a href="#s1">大作业要求拆解（先读懂规则）</a></li>
+      <li><a href="#s2">实现路线：自研 vs 二次开发</a></li>
+      <li><a href="#s3">一般软件开发流程（敏捷DevOps）</a></li>
+      <li><a href="#s4">9 周阶段划分与两人分工</a></li>
+      <li><a href="#s5">各阶段保姆级操作指南</a></li>
+      <li><a href="#s6">AI 协作提示词手册</a></li>
+      <li><a href="#s7">附录：术语表 / 参考资料 / 常见坑</a></li>
+    </ol>
+  </nav>
+
+  <!-- ============ 1 ============ -->
+  <section id="s1">
+    <h2 class="sec"><span class="num">1</span>大作业要求拆解（先读懂规则）</h2>
+
+    <p>动手前，先把「老师到底怎么打分」吃透。这门课的考核是三块，<strong>60% 的分数都在"各阶段完成度"</strong>上，而"完成度"本质是——<strong>你在华为云 DevCloud 上把每个环节操作了一遍并留下了痕迹</strong>。</p>
+
+    <h3>1.1 三大作业要求</h3>
+    <table>
+      <tr><th style="width:60px">序号</th><th>要求</th><th>一句话理解</th></tr>
+      <tr><td>1</td><td>开发部署一个个人博客，实现登录、发表文章、评论等基本功能</td><td>要有<strong>能跑、能访问</strong>的真实系统</td></tr>
+      <tr><td>2</td><td>对整个软件项目开发过程的总结描述</td><td>写一份「我们怎么走完流程」的报告（25%）</td></tr>
+      <tr><td>3</td><td>针对开发全过程给出自己的思考和建议</td><td>写「踩坑 + 反思 + 建议」（15%）</td></tr>
+    </table>
+
+    <h3>1.2 评分标准（这就是你的"拿分地图"）</h3>
+    <table class="center">
+      <tr><th>阶段</th><th>具体环节</th><th>分数</th><th>难度</th><th>DevCloud 上要做的动作</th></tr>
+      <tr><td rowspan="3">项目管理</td><td>项目规划</td><td>5%</td><td>简单</td><td>新建项目 → 规划 → 思维导图拆 Story</td></tr>
+      <tr><td>工作项设置</td><td>5%</td><td>简单</td><td>给每个 Story 填优先级/日期/工时</td></tr>
+      <tr><td>迭代</td><td>5%</td><td>简单</td><td>建迭代、按优先级排入 Story</td></tr>
+      <tr><td rowspan="2">代码托管</td><td>开发提交</td><td>5%</td><td>中等</td><td>代码推送到 DevCloud 仓库（或 CloudIDE 开发）</td></tr>
+      <tr><td>代码检查</td><td>5%</td><td>中等</td><td>跑一次代码检查服务</td></tr>
+      <tr><td rowspan="2">编译构建</td><td>构建配置</td><td>6%</td><td>中等</td><td>建 Maven 构建任务并执行成功</td></tr>
+      <tr><td>持续集成</td><td>5%</td><td>中等</td><td>代码变更后自动触发构建</td></tr>
+      <tr><td rowspan="2">部署</td><td>主机配置</td><td>6%</td><td>中等</td><td>买 ECS + 对主机授信</td></tr>
+      <tr><td>部署配置</td><td>8%</td><td>中等</td><td>建部署任务并成功部署</td></tr>
+      <tr><td rowspan="2">分支合并<br>和持续交付</td><td>分支合并</td><td>5%</td><td>难</td><td>功能分支 + 合并请求（MR）</td></tr>
+      <tr><td>持续交付流水线</td><td>5%</td><td>中等</td><td>建流水线（检查→构建→部署）</td></tr>
+    </table>
+
+    <div class="box info"><span class="ttl">核心结论</span>
+      11 个环节里，只有「开发提交」需要真正写代码，其余 10 个都是<strong> DevCloud 平台操作</strong>。所以策略是：<strong>代码够用就行，把 80% 的精力花在"把 DevCloud 每个环节走通 + 截图留痕 + 写总结"上</strong>。每个环节做完立刻截图，这些截图是报告（25%）和答辩的硬素材。
+    </div>
+  </section>
+
+  <!-- ============ 2 ============ -->
+  <section id="s2">
+    <h2 class="sec"><span class="num">2</span>实现路线：自研 vs 二次开发</h2>
+
+    <p>你手上已经有一个现成的开源博客 <strong>OneBlog（DBlog）</strong>。作业原文明确写「<em>软件源码可由同学们自行开发，亦可利用网上相应的开源资源进行二次开发</em>」，所以两条路都合规。先对比，再给你推荐。</p>
+
+    <h3>2.1 方案对比</h3>
+    <table>
+      <tr><th>维度</th><th>方案 A：二次开发 OneBlog</th><th>方案 B：自研精简版</th></tr>
+      <tr><td>前期投入</td><td>低（登录/文章/评论/后台全现成）</td><td>高（登录鉴权、CRUD、前端全自己写）</td></tr>
+      <tr><td>原创度 / 答辩可讲性</td><td>中（需做"看得见的改造"）</td><td>高（每一行都是自己的）</td></tr>
+      <tr><td>功能与演示效果</td><td>强（RBAC、SEO、评论审核等齐全）</td><td>弱（功能精简、界面朴素）</td></tr>
+      <tr><td>技术栈</td><td>SpringBoot 2.3.5 + JDK8 + Shiro + Freemarker + Bootstrap3（偏老）</td><td>可自选 SpringBoot 3.x + Thymeleaf（新）</td></tr>
+      <tr><td>环境复杂度</td><td>需 MySQL + Redis（稍多）</td><td>仅 MySQL（简单）</td></tr>
+      <tr><td>对 DevCloud 契合度</td><td>高（Maven 多模块 + Docker，正好练构建/部署）</td><td>高</td></tr>
+      <tr><td>2 人 9 周风险</td><td>低</td><td>中高（编码易挤占 DevCloud 与报告时间）</td></tr>
+    </table>
+
+    <h3>2.2 我的推荐：方案 C（A 为主 + 自研特色功能）</h3>
+    <div class="box tip"><span class="ttl">推荐路线</span>
+      以 <strong>二次开发 OneBlog</strong> 打底（省下 3~4 周编码时间），同时<strong>自研 1~2 个"特色功能"</strong>作为原创亮点，例如：暗黑模式切换、标签云/归档页、访客统计、文章点赞、Markdown 目录等。这样既把时间花在 60% 的 DevCloud 流程上，答辩时又有"我们自己写的代码"可讲。
+    </div>
+
+    <div class="box warn"><span class="ttl">二次开发的两条红线（务必遵守）</span>
+      <ul>
+        <li><strong>改造要"看得见"</strong>：改站点名/Logo/配色/首页布局，并至少新增 1 个自研功能，否则会被认为"照搬"。每次改造单独开一个功能分支提交，形成可讲的提交历史。</li>
+        <li><strong>诚实标注来源</strong>：在 README 和总结报告里明确写"基于 OneBlog（Gitee: yadong.zhang/DBlog，GPL v3）二次开发"，这是 25% 总结 + 15% 思考里非常好的素材（开源协议、二次开发的工程决策）。</li>
+      </ul>
+    </div>
+    <p class="muted">注：OneBlog 是 GPL v3 协议，二次开发后若对外发布需同样开源；课程作业内部提交不涉及，但报告里提到这点会显得专业。</p>
+  </section>
+
+  <!-- ============ 3 ============ -->
+  <section id="s3">
+    <h2 class="sec"><span class="num">3</span>一般软件开发流程（敏捷DevOps）</h2>
+
+    <p>一个软件项目从 0 到交付，业界标准流程是一个 <strong>DevOps 无限循环</strong>：<code>规划 → 编码 → 构建 → 测试 → 发布 → 部署 → 运维 → 监控</code>，再回到规划。落到本作业，就是下面这条线，每一步我都标了对应的 DevCloud 拿分点。</p>
+
+    <pre><code>① 需求分析 ──▶ ② 项目规划 ──▶ ③ 架构设计 ──▶ ④ 编码实现 ──▶ ⑤ 代码检查
+     (需求文档)     (拆Story/迭代)   (选型/建库)    (功能分支提交)   (质量门禁)
+        │                                                               │
+        └──⑨ 总结复盘 ◀── ⑧ 运维监控 ◀── ⑦ 持续交付 ◀── ⑥ 编译构建+CI ◀┘
+          (总结25%+思考15%)  (分支管理)   (流水线)      (构建配置+持续集成)</code></pre>
+
+    <table>
+      <tr><th>#</th><th>阶段</th><th>核心产出</th><th>DevCloud 拿分点</th></tr>
+      <tr><td>1</td><td>需求分析</td><td>需求文档、用户故事（Story）</td><td>项目管理-规划（5%）</td></tr>
+      <tr><td>2</td><td>项目规划</td><td>Story 拆解、优先级、迭代计划</td><td>工作项（5%）+ 迭代（5%）</td></tr>
+      <tr><td>3</td><td>架构设计</td><td>技术选型、数据库设计、模块划分</td><td>—（写进报告）</td></tr>
+      <tr><td>4</td><td>编码实现</td><td>可运行代码（登录/文章/评论）</td><td>代码托管-开发提交（5%）</td></tr>
+      <tr><td>5</td><td>代码检查</td><td>质量报告</td><td>代码检查（5%）</td></tr>
+      <tr><td>6</td><td>编译构建</td><td>构建成功 + 发布包</td><td>构建配置（6%）+ 持续集成（5%）</td></tr>
+      <tr><td>7</td><td>部署</td><td>系统上线可访问</td><td>主机配置（6%）+ 部署配置（8%）</td></tr>
+      <tr><td>8</td><td>分支与持续交付</td><td>稳定的 Master + 流水线</td><td>分支合并（5%）+ 流水线（5%）</td></tr>
+      <tr><td>9</td><td>总结复盘</td><td>总结报告 + 思考建议</td><td>总结描述（25%）+ 思考建议（15%）</td></tr>
+    </table>
+
+    <div class="box info"><span class="ttl">为什么这个顺序</span>
+      它体现的是「<strong>敏捷迭代 + DevOps 自动化</strong>」：需求拆成小 Story，放进短迭代（每 1~2 周）交付；代码提交后自动构建、自动部署，形成"提交即上线"的流水线。你的总结报告（25%）要讲的正是这条链路的<strong>方法论和你的实践体会</strong>。
+    </div>
+  </section>
+
+  <!-- ============ 4 ============ -->
+  <section id="s4">
+    <h2 class="sec"><span class="num">4</span>9 周阶段划分与两人分工</h2>
+
+    <p>以 2026-12-27 为截止日倒排，共 9 周（10-26 起）。每个阶段都以「<strong>能演示 / 能截图</strong>」为里程碑——这既符合评分标准，也保证每周例会永远有东西可讲。</p>
+
+    <table>
+      <tr><th>阶段</th><th>周次 / 日期</th><th>主题</th><th>里程碑（可验收）</th><th>对应拿分点</th></tr>
+      <tr><td>0</td><td>W1 前段<br>10-26~10-28</td><td>定方案 + 建环境</td><td>选定二次开发 OneBlog；本地能跑通</td><td>—</td></tr>
+      <tr><td>1</td><td>W1<br>10-26~11-01</td><td>需求分析与项目规划</td><td>需求文档 + DevCloud 思维导图 Story + 迭代</td><td>规划5%+工作项5%+迭代5%</td></tr>
+      <tr><td>2</td><td>W2<br>11-02~11-08</td><td>架构设计与环境搭建</td><td>数据库设计 + 代码入 DevCloud 仓库</td><td>（报告素材）</td></tr>
+      <tr><td>3</td><td>W3<br>11-09~11-15</td><td>迭代1：核心功能开发</td><td>登录/文章/评论跑通 + 提交 + 代码检查</td><td>开发提交5%+代码检查5%</td></tr>
+      <tr><td>4</td><td>W4<br>11-16~11-22</td><td>迭代2：改造与特色功能</td><td>换肤/改名 + 1 个自研特色功能</td><td>开发提交（持续）</td></tr>
+      <tr><td>5</td><td>W5<br>11-23~11-29</td><td>编译构建与持续集成</td><td>Maven 构建成功 + 提交自动触发</td><td>构建配置6%+持续集成5%</td></tr>
+      <tr><td>6</td><td>W6<br>11-30~12-06</td><td>部署上云</td><td>ECS 部署成功、公网可访问</td><td>主机配置6%+部署配置8%</td></tr>
+      <tr><td>7</td><td>W7<br>12-07~12-13</td><td>分支合并与持续交付</td><td>MR 流程 + 完整流水线跑通</td><td>分支合并5%+流水线5%</td></tr>
+      <tr><td>8</td><td>W8<br>12-14~12-20</td><td>测试与验收</td><td>功能测试通过、验收清单打勾</td><td>（加固前几阶段）</td></tr>
+      <tr><td>9</td><td>W9<br>12-21~12-27</td><td>总结报告与答辩准备</td><td>总结(25%)+思考建议(15%) 定稿 + 预演</td><td>总结25%+思考15%</td></tr>
+    </table>
+
+    <h3>4.1 两人分工（角色 A / 角色 B）</h3>
+    <table>
+      <tr><th>角色</th><th>建议人选</th><th>负责方向</th><th>关键产出</th></tr>
+      <tr><td><strong>角色 A（队长/DevOps）</strong><span class="badge b-a">A</span></td><td>秦庆泽</td><td>项目管理（规划/工作项/迭代）、后端改造、编译构建、持续集成、部署、流水线、分支管理</td><td>DevCloud 全流程配置与截图、后端代码、部署文档</td></tr>
+      <tr><td><strong>角色 B（开发/文档）</strong><span class="badge b-b">B</span></td><td>队友</td><td>需求文档、数据库设计、前端页面改造、代码检查、功能测试、总结报告与思考建议</td><td>需求/设计文档、前端、测试报告、总结报告（25%+15%）</td></tr>
+    </table>
+    <div class="box tip"><span class="ttl">分工原则</span>
+      角色 A 主攻「<strong>DevCloud 那条 60% 的线</strong>」，角色 B 主攻「<strong>文档和 40% 的总结线</strong>」。但两件事要交叉配合：DevCloud 每个环节两人一起过一遍（都能讲），总结报告必须两人一起写（引用双方截图）。每周开一次 15 分钟站会同步进度与卡点。
+    </div>
+  </section>
+
+  <!-- ============ 5 ============ -->
+  <section id="s5">
+    <h2 class="sec"><span class="num">5</span>各阶段保姆级操作指南</h2>
+    <p>下面是每个阶段的<strong>目标 → 步骤 → 两人分工 → 验收标准 → 交付物</strong>。照着做即可，每个阶段末尾都指向第 6 章的对应 AI 提示词。</p>
+
+    <!-- 阶段1 -->
+    <div class="phase">
+      <div class="head"><b>阶段 1 · 需求分析与项目规划</b><span class="week">W1 · 10-26~11-01</span><span class="owner">A 主导，B 配合</span></div>
+      <p><strong>目标：</strong>产出需求文档，并在 DevCloud 上完成「规划 → 工作项 → 迭代」三个拿分环节（合计 15%）。</p>
+      <h4>具体步骤</h4>
+      <ol>
+        <li>用第 6 章的提示词 <code>P1</code> 让 AI 生成一份需求文档（用户故事格式），覆盖：登录、发表文章、编辑/删除文章、评论、文章列表/分类/标签、后台管理、我的特色功能。</li>
+        <li>登录华为云 DevCloud，新建项目（Scrum 模式），命名「个人博客」。</li>
+        <li>进入「规划」→ 用<strong>思维导图</strong>把需求拆成 Story 层级（Epic「博客系统」→ Feature「用户模块/文章模块/评论模块」→ Story「用户登录」「发布文章」…）。</li>
+        <li>保存后 Story 会自动进入「工作项」，逐条补全字段：<strong>描述、优先级（P0/P1/P2）、开始/结束日期、预计工时、重要程度</strong>。</li>
+        <li>进入「迭代」，创建迭代 1、迭代 2，把 Story 按「优先级高→低」拖入对应迭代。</li>
+        <li><strong>每完成一步截图</strong>（思维导图、工作项列表、迭代看板）。</li>
+      </ol>
+      <h4>验收标准（完成度检查）</h4>
+      <ul>
+        <li>思维导图里 Story 层级 ≥ 3 层，Story 总数 ≥ 10 个。</li>
+        <li>每个 Story 的优先级/日期/工时字段已填写。</li>
+        <li>至少 2 个迭代，Story 已按优先级分配。</li>
+      </ul>
+      <p><strong>交付物：</strong>需求文档（.md / .docx）+ DevCloud 截图若干。</p>
+      <p class="muted">AI 提示词 → <a href="#p1">P1</a></p>
+    </div>
+
+    <!-- 阶段2 -->
+    <div class="phase">
+      <div class="head"><b>阶段 2 · 架构设计与环境搭建</b><span class="week">W2 · 11-02~11-08</span><span class="owner">B 主导，A 配合</span></div>
+      <p><strong>目标：</strong>确定技术选型与数据库设计，把 OneBlog 代码接入 DevCloud 代码仓库，本地/云端能跑。</p>
+      <h4>具体步骤</h4>
+      <ol>
+        <li>用提示词 <code>P2</code> 生成「系统架构说明 + 数据库 ER 图/建表 SQL」，作为设计文档。</li>
+        <li>安装本地环境：JDK 8、Maven、MySQL、Redis（OneBlog 依赖）。或直接用 DevCloud 的 CloudIDE 云端开发（免装本地）。</li>
+        <li>在 DevCloud 新建代码仓库，把 OneBlog 代码 <span class="kbd">git init</span> → 添加远端 → <span class="kbd">git push</span> 推上去（或用 CloudIDE 直接导入）。</li>
+        <li>初始化数据库：导入 <code>docs/docker/mysql/dblog.sql</code> 与 <code>init_data.sql</code>。</li>
+        <li>跑通前后台：启动 <code>BlogWebApplication</code> 和 <code>BlogAdminApplication</code>，浏览器能访问首页和后台（root/123456）。</li>
+      </ol>
+      <h4>验收标准</h4>
+      <ul>
+        <li>设计文档含架构图（文字/图）与完整建表 SQL。</li>
+        <li>代码已在 DevCloud 仓库，提交历史可见。</li>
+        <li>本地/云端能访问博客首页与后台登录页。</li>
+      </ul>
+      <p><strong>交付物：</strong>架构设计文档 + 数据库脚本 + 仓库首次提交。</p>
+      <p class="muted">AI 提示词 → <a href="#p2">P2</a></p>
+    </div>
+
+    <!-- 阶段3 -->
+    <div class="phase">
+      <div class="head"><b>阶段 3 · 迭代1：核心功能开发</b><span class="week">W3 · 11-09~11-15</span><span class="owner">A 后端 / B 前端</span></div>
+      <p><strong>目标：</strong>确认登录、发表文章、评论三大功能可用，完成首次代码提交与代码检查（10%）。</p>
+      <h4>具体步骤</h4>
+      <ol>
+        <li>在功能分支 <code>feature/xxx</code> 上做二次开发（改名、改 Logo、按需微调功能）。<strong>禁止直接在 Master 上改</strong>。</li>
+        <li>用提示词 <code>P3</code> 让 AI 协助定位/修改代码（如改站点名、改配色）。</li>
+        <li>提交代码（提交信息用规范：<code>feat:</code>/<code>fix:</code>/<code>docs:</code> 开头）。</li>
+        <li>在 DevCloud 运行<strong>代码检查</strong>服务，选 Java 规则集，跑一遍并截图。</li>
+        <li>修复明显告警，重新检查。</li>
+      </ol>
+      <h4>验收标准</h4>
+      <ul>
+        <li>登录/发表文章/评论三功能在浏览器实测可用。</li>
+        <li>DevCloud 仓库有清晰的分支 + 多条提交记录。</li>
+        <li>代码检查任务执行成功并出报告（截图）。</li>
+      </ul>
+      <p><strong>交付物：</strong>可运行代码 + 代码检查报告截图。</p>
+      <p class="muted">AI 提示词 → <a href="#p3">P3</a>、<a href="#p4">P4</a></p>
+    </div>
+
+    <!-- 阶段4 -->
+    <div class="phase">
+      <div class="head"><b>阶段 4 · 迭代2：改造与特色功能</b><span class="week">W4 · 11-16~11-22</span><span class="owner">B 主导特色功能，A 协助</span></div>
+      <p><strong>目标：</strong>完成"看得见的改造" + 至少 1 个自研特色功能，形成原创亮点。</p>
+      <h4>具体步骤</h4>
+      <ol>
+        <li>改站点名/Logo/首页 Banner/配色，让博客"像你自己的"。</li>
+        <li>自研 1 个特色功能（推荐：暗黑模式切换、标签云、归档页、文章点赞、Markdown 目录之一），用提示词 <code>P5</code> 辅助。</li>
+        <li>新功能单独开分支开发，完成后发<strong>合并请求（MR）</strong>合入 Master（顺便练分支合并，第 7 阶段会正式考）。</li>
+        <li>持续提交、持续截图。</li>
+      </ol>
+      <h4>验收标准</h4>
+      <ul>
+        <li>站点名称/视觉与原始 OneBlog 明显不同。</li>
+        <li>至少 1 个自研功能可演示、代码是你自己写的。</li>
+        <li>至少走通 1 次 MR 合并流程。</li>
+      </ul>
+      <p><strong>交付物：</strong>改造后的博客 + 特色功能 + MR 记录。</p>
+      <p class="muted">AI 提示词 → <a href="#p5">P5</a></p>
+    </div>
+
+    <!-- 阶段5 -->
+    <div class="phase">
+      <div class="head"><b>阶段 5 · 编译构建与持续集成</b><span class="week">W5 · 11-23~11-29</span><span class="owner">A 主导</span></div>
+      <p><strong>目标：</strong>配置 Maven 构建任务并成功产出发布包，开启代码变更自动构建（11%）。</p>
+      <h4>具体步骤</h4>
+      <ol>
+        <li>在 DevCloud「编译构建」创建构建任务，选择 Maven 构建、Java 环境，构建命令 <code>mvn clean package -Dmaven.test.skip=true -Pdev</code>。</li>
+        <li>配置产物路径（如 <code>blog-web/target/*.jar</code>、<code>blog-admin/target/*.jar</code>），执行构建，直到<strong>构建成功并生成发布包</strong>。</li>
+        <li>开启「持续集成」：设置代码合并/推送后<strong>自动触发</strong>构建。</li>
+        <li>验证：推一次代码，观察构建任务自动执行。</li>
+        <li>用提示词 <code>P6</code> 解决构建报错（依赖下载失败、JDK 版本等）。</li>
+      </ol>
+      <h4>验收标准</h4>
+      <ul>
+        <li>构建任务执行成功，产出发布包（截图）。</li>
+        <li>代码变更后构建自动触发（截图）。</li>
+      </ul>
+      <p><strong>交付物：</strong>构建配置 + 发布包 + 自动触发记录。</p>
+      <p class="muted">AI 提示词 → <a href="#p6">P6</a></p>
+    </div>
+
+    <!-- 阶段6 -->
+    <div class="phase">
+      <div class="head"><b>阶段 6 · 部署上云</b><span class="week">W6 · 11-30~12-06</span><span class="owner">A 主导，B 配合</span></div>
+      <p><strong>目标：</strong>把博客部署到华为 ECS，公网可访问（14%，占比最高，务必做好）。</p>
+      <h4>具体步骤</h4>
+      <ol>
+        <li>购买/申请华为 ECS（学生优惠或老师提供），记下公网 IP。</li>
+        <li>在 DevCloud 对主机<strong>授信</strong>（主机配置拿分点）。</li>
+        <li>ECS 上装 JDK + MySQL + Redis（或用 OneBlog 的 Docker Compose 一键部署，更快）。</li>
+        <li>在 DevCloud 创建<strong>部署任务</strong>：上传发布包 → 解压 → 执行启动脚本（或 docker 部署）。</li>
+        <li>执行部署，浏览器访问 <code>http://公网IP:端口</code>，确认首页打开。</li>
+        <li>配置安全组开放端口；有条件可绑定域名/HTTPS（加分）。</li>
+        <li>用提示词 <code>P7</code> 解决部署问题（端口不通、JDK 版本、内存不足）。</li>
+      </ol>
+      <h4>验收标准</h4>
+      <ul>
+        <li>公网能访问博客首页，登录/发文/评论可用。</li>
+        <li>部署任务执行成功（截图）。</li>
+      </ul>
+      <p><strong>交付物：</strong>可访问的线上博客 + 部署配置截图。</p>
+      <p class="muted">AI 提示词 → <a href="#p7">P7</a></p>
+    </div>
+
+    <!-- 阶段7 -->
+    <div class="phase">
+      <div class="head"><b>阶段 7 · 分支合并与持续交付</b><span class="week">W7 · 12-07~12-13</span><span class="owner">A 主导</span></div>
+      <p><strong>目标：</strong>规范分支合并流程（难点），并搭建完整持续交付流水线（10%）。</p>
+      <h4>具体步骤</h4>
+      <ol>
+        <li>给 Master 分支设置<strong>保护规则</strong>（禁止直接推送，只能通过 MR 合入）。</li>
+        <li>新功能一律走 <code>feature/xxx</code> 分支 → 提交 → 发 MR → Review → 合并。截图留证。</li>
+        <li>在 DevCloud 创建<strong>流水线</strong>，把三个子任务串起来：代码检查 → 编译构建 → 部署。</li>
+        <li>执行流水线，确认三步全绿，实现"一次提交、自动上线"。</li>
+      </ol>
+      <h4>验收标准</h4>
+      <ul>
+        <li>Master 有保护，一次完整 MR 流程走通（截图）。</li>
+        <li>流水线跑通检查→构建→部署（截图）。</li>
+      </ul>
+      <p><strong>交付物：</strong>分支保护配置 + MR 记录 + 流水线记录。</p>
+      <p class="muted">AI 提示词 → <a href="#p8">P8</a></p>
+    </div>
+
+    <!-- 阶段8 -->
+    <div class="phase">
+      <div class="head"><b>阶段 8 · 测试与验收</b><span class="week">W8 · 12-14~12-20</span><span class="owner">B 主导，A 配合</span></div>
+      <p><strong>目标：</strong>功能测试 + 验收，堵住漏洞，补齐前面各阶段遗漏的截图。</p>
+      <h4>具体步骤</h4>
+      <ol>
+        <li>编写测试用例清单（登录、发文、编辑、删除、评论、特色功能、后台），逐条手测打勾。</li>
+        <li>用提示词 <code>P9</code> 辅助设计测试用例、定位 Bug。</li>
+        <li>修复 Bug，重新走构建/部署（正好演示流水线价值）。</li>
+        <li>复盘：检查 11 个拿分环节的截图是否齐全，缺哪个补哪个。</li>
+      </ol>
+      <h4>验收标准</h4>
+      <ul>
+        <li>测试用例全通过（含边界用例）。</li>
+        <li>11 个 DevCloud 环节截图齐备。</li>
+      </ul>
+      <p><strong>交付物：</strong>测试报告 + 验收清单。</p>
+      <p class="muted">AI 提示词 → <a href="#p9">P9</a></p>
+    </div>
+
+    <!-- 阶段9 -->
+    <div class="phase">
+      <div class="head"><b>阶段 9 · 总结报告与答辩准备</b><span class="week">W9 · 12-21~12-27</span><span class="owner">B 主笔，A 补充</span></div>
+      <p><strong>目标：</strong>产出 40% 的总结描述（25%）+ 思考建议（15%），准备答辩。</p>
+      <h4>具体步骤</h4>
+      <ol>
+        <li>用提示词 <code>P10</code> 生成「开发过程总结」框架，填充真实截图与数据。</li>
+        <li>单独写「思考与建议」章节：踩过的坑、DevOps 的体会、二次开发的取舍、如果重来怎么做。</li>
+        <li>整理答辩 PPT（可选）+ 3 分钟讲稿：项目是什么 → 怎么走完流程 → 亮点 → 反思。</li>
+        <li>两人互相预演，检查演示环境（线上博客要能现场打开）。</li>
+      </ol>
+      <h4>验收标准</h4>
+      <ul>
+        <li>总结报告结构完整、图文并茂、有数据有反思。</li>
+        <li>线上系统可现场演示。</li>
+      </ul>
+      <p><strong>交付物：</strong>总结报告（docx）+ 答辩 PPT + 讲稿。</p>
+      <p class="muted">AI 提示词 → <a href="#p10">P10</a></p>
+    </div>
+  </section>
+
+  <!-- ============ 6 ============ -->
+  <section id="s6">
+    <h2 class="sec"><span class="num">6</span>AI 协作提示词手册</h2>
+
+    <p>和 AI 高效协作的核心不是"问得多"，而是<strong>给足上下文 + 说清要什么</strong>。下面是一个万能公式和 10 个可直接复制的阶段提示词。</p>
+
+    <h3>6.1 万能提示词公式（先记住这个）</h3>
+    <pre><code>角色：你现在是一名【资深 Java 工程师 / 产品经理 / DevOps 工程师 / 测试工程师】
+背景：我在做【软件工程大作业：个人博客】，用【SpringBoot 2.x + MySQL + Redis】，目前进展到【哪个阶段】
+任务：请你【具体要做的一件事】
+要求：①…②…③…（版本、风格、边界、不要什么）
+输出格式：【表格 / Markdown / 完整代码 / 分步骤 / 100字以内】</code></pre>
+
+    <div class="box tip"><span class="ttl">5 条高效原则</span>
+      <ul>
+        <li><strong>一次只问一件事</strong>：让 AI 干"登录功能"就别同时塞"部署+测试"。</li>
+        <li><strong>报错必带原文</strong>：贴完整报错/日志，别只说"报错了"。</li>
+        <li><strong>指定版本</strong>：说"SpringBoot 2.3.5 / JDK 8"，否则 AI 容易用过时或过新的写法。</li>
+        <li><strong>追问式迭代</strong>：先要框架 → 再细化 → 再让 AI"检查自己写的有没有问题"。</li>
+        <li><strong>要对比不要单一答案</strong>：问"给我两种方案并对比优劣"，比"给我一个方案"质量高得多。</li>
+      </ul>
+    </div>
+
+    <h3 id="p1">P1 · 需求分析</h3>
+    <pre><code>你是产品经理。帮我把"个人博客"拆成用户故事(Story)。
+格式：每条用"作为[角色]，我想要[功能]，以便[价值]"，并标注优先级(P0/P1/P2)和验收标准。
+功能范围至少覆盖：用户登录、发表/编辑/删除文章、文章评论、文章列表/分类/标签、后台管理。
+再加 1~2 个有亮点的特色功能建议。用 Markdown 表格输出。</code></pre>
+
+    <h3 id="p2">P2 · 架构设计</h3>
+    <pre><code>你是 Java 架构师。设计个人博客的系统架构，技术栈 SpringBoot 2.3.5 + MySQL + Redis + Shiro + Freemarker。
+输出：①分层架构说明(文字即可)；②数据库 ER 图(用 Mermaid 或文字描述)；③核心表建表 SQL。
+表至少包含用户、文章、分类、标签、评论。要求可直接用于 MySQL 5.6+。</code></pre>
+
+    <h3 id="p3">P3 · 编码/二次开发定位</h3>
+    <pre><code>我在二次开发开源博客 OneBlog(SpringBoot+Freemarker)。现在想把【站点名称/Logo/首页配色】改成【xxx】。
+请先说明大致要改哪些文件/配置，再给出关键修改片段。不要一次性重写整个项目，先给改动点清单。</code></pre>
+
+    <h3 id="p4">P4 · 报错排障</h3>
+    <pre><code>我的代码报错如下(贴完整报错/日志)：
+【粘贴报错信息】
+技术栈 SpringBoot 2.3.5 + JDK 8 + Maven。请分析根因，给出修复方案，并说明为什么。先给原因，再给代码。</code></pre>
+
+    <h3 id="p5">P5 · 特色功能开发</h3>
+    <pre><code>你是前端工程师。在 SpringBoot+Freemarker+Bootstrap3 的博客里新增"标签云/归档页/暗黑模式切换"功能。
+要求：①给出前后端完整改动；②不破坏现有布局；③代码可直接粘贴运行。先给思路，再给完整代码。</code></pre>
+
+    <h3 id="p6">P6 · 构建排障</h3>
+    <pre><code>我在华为云 DevCloud 配 Maven 构建(SpringBoot 多模块工程)，报错/卡在【xxx】。
+构建命令是 mvn clean package -Dmaven.test.skip=true -Pdev。
+请分析原因(依赖下载/JDK版本/多模块顺序)，给出在 DevCloud 上正确的构建配置步骤。</code></pre>
+
+    <h3 id="p7">P7 · 部署排障</h3>
+    <pre><code>我要把 SpringBoot jar 部署到华为云 ECS(CentOS/Ubuntu)。
+给出从上传到启动的完整步骤：安装 JDK、初始化 MySQL、上传 jar、nohup 后台启动、开机自启、防火墙/安全组放行端口。
+遇到【具体报错】时该怎么排查。分步骤输出，标注每一步的目的。</code></pre>
+
+    <h3 id="p8">P8 · 分支与流水线</h3>
+    <pre><code>你是 DevOps 工程师。解释并指导：①Git 功能分支 + MR(合并请求) 的标准流程和命令；②如何在 DevCloud 配一条"代码检查→编译构建→部署"的持续交付流水线。
+面向零基础，每一步说清楚"在哪个页面点什么"。用分步骤输出。</code></pre>
+
+    <h3 id="p9">P9 · 测试用例</h3>
+    <pre><code>你是测试工程师。为个人博客(登录/发文/编辑/删除/评论/后台)设计测试用例。
+用表格输出：用例编号/前置条件/操作步骤/预期结果。覆盖正常和边界(空输入、超长、重复提交、未登录访问)。</code></pre>
+
+    <h3 id="p10">P10 · 总结报告</h3>
+    <pre><code>帮我写软件工程大作业"个人博客开发过程总结"，要求有思考深度、结合敏捷与 DevOps 方法论。
+框架：①项目概述；②开发过程(需求→设计→编码→构建→部署→交付，逐步写)；③DevOps 平台使用体会；④踩坑与解决；⑤思考与建议(如果重来怎么做)。
+风格：正式、条理清晰、适合作为课程报告，2000~3000 字。先给大纲，我确认后再逐节展开。</code></pre>
+  </section>
+
+  <!-- ============ 7 ============ -->
+  <section id="s7">
+    <h2 class="sec"><span class="num">7</span>附录</h2>
+
+    <h3>7.1 术语表</h3>
+    <table>
+      <tr><th>术语</th><th>含义</th></tr>
+      <tr><td>Story（用户故事）</td><td>从用户视角描述的一个小功能，如"作为用户，我想登录"</td></tr>
+      <tr><td>迭代（Sprint）</td><td>一个固定周期（1~2 周）内交付一批 Story 的开发节奏</td></tr>
+      <tr><td>CI / 持续集成</td><td>代码提交后自动构建、自动检查</td></tr>
+      <tr><td>CD / 持续交付</td><td>构建产物自动部署到服务器</td></tr>
+      <tr><td>MR / 合并请求</td><td>把功能分支的代码请求合入主分支并接受审查</td></tr>
+      <tr><td>ECS</td><td>华为云弹性云服务器</td></tr>
+      <tr><td>DevCloud</td><td>华为云一站式软件开发平台</td></tr>
+      <tr><td>RBAC</td><td>基于角色的权限控制</td></tr>
+    </table>
+
+    <h3>7.2 参考资料</h3>
+    <ul>
+      <li>华为云 DevCloud：<code>https://www.huaweicloud.com/devcloud/</code></li>
+      <li>华为云 ECS：<code>https://www.huaweicloud.com/product/ecs.html</code></li>
+      <li>OneBlog（DBlog）源码：<code>https://gitee.com/yadong.zhang/DBlog</code>（本地已有一份）</li>
+      <li>OneBlog 帮助文档：<code>https://docs.zhyd.me</code></li>
+    </ul>
+
+    <h3>7.3 最容易踩的 5 个坑</h3>
+    <ol>
+      <li><strong>在 Master 上直接改代码</strong>——作业明确要求功能分支 + MR，且这是 5% 的考点。</li>
+      <li><strong>只顾写功能，忘了 DevCloud 截图</strong>——60% 的分数靠"痕迹"，每步做完立刻截图。</li>
+      <li><strong>JDK 版本不匹配</strong>——OneBlog 用 JDK 8，别用 JDK 11/17 直接跑。</li>
+      <li><strong>构建/部署报错直接抄 AI 不改环境</strong>——先看是不是依赖源、内存、端口问题。</li>
+      <li><strong>总结报告堆截图不写思考</strong>——15% 的"思考建议"要真反思，不是流水账。</li>
+    </ol>
+  </section>
+
+  <p class="muted" style="text-align:center;margin-top:30px">本手册生成于 2026-10-23 · 截止日按 2026-12-27 假设，如需调整日期平移周次即可</p>
+</div>
+</body>
+</html>

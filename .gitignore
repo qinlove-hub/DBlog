@@ -25,3 +25,7 @@ hs_err_pid*
 /logdir_IS_UNDEFINED/
 /blog-codegen/generator-output/
 */target/
+
+# 工具内部产物（工作记忆、文档生成中间文件，不纳入仓库）
+/.workbuddy/
+/output/
