@@ -34,14 +34,19 @@
 git remote add codearts <CodeArts 仓库的 HTTPS 克隆地址>
 ```
 
-日常推送（顺序无所谓，两个都要推）：
+CodeArts 的 HTTPS 认证有两个容易踩的点：
+
+1. **用户名固定填写 `private-token`**，密码填写「个人设置 > 代码托管 > 访问令牌」里生成的访问令牌。填华为云昵称或账号名都会返回 401。
+2. **CodeArts 必须走直连，不能过代理。** GitHub 需要经本机 Clash（`127.0.0.1:7897`）才能访问，但同一个代理访问国内域名会 TLS 握手失败，报 `schannel: failed to receive handshake`。推送时要给两个远程分别指定代理，见下方命令。
+
+日常推送（顺序无所谓，两个都要推，且代理设置不同）：
 
 ```text
-git push origin <分支名>
-git push codearts <分支名>
+git -c http.proxy=http://127.0.0.1:7897 -c https.proxy=http://127.0.0.1:7897 push origin <分支名>
+git -c http.proxy= -c https.proxy= push codearts <分支名>
 ```
 
-也可以直接运行仓库内的一键脚本 `scripts/push-all.bat`：它先经本机 Clash 代理（`127.0.0.1:7897`）推 GitHub，再推 CodeArts；若 `codearts` 远程尚未配置，会跳过并给出提示。
+也可以直接运行仓库内的一键脚本 `scripts/push-all.bat`，它已按上述规则为两个远程分别配置代理，先推 GitHub 再推 CodeArts，最后打印两边结果；若 `codearts` 远程尚未配置，会跳过并给出提示。即使 GitHub 因代理节点不稳定失败，它仍会继续推 CodeArts，不会半途而废。
 
 三条红线：
 
@@ -54,8 +59,8 @@ git push codearts <分支名>
 核对两边是否一致：
 
 ```text
-git ls-remote origin
-git ls-remote codearts
+git -c http.proxy=http://127.0.0.1:7897 ls-remote origin
+git -c http.proxy= ls-remote codearts
 ```
 
 两个命令输出的 `refs/heads/` 行 SHA 应完全相同。
