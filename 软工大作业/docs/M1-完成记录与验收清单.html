@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>%s</title>
+<style>
+  :root{--ink:#1a1a1a;--muted:#666;--line:#e2e6ea;--brand:#185FA5;--bg-soft:#f5f8fc;}
+  *{box-sizing:border-box;}
+  body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",Arial,sans-serif;color:var(--ink);line-height:1.75;margin:0;background:#fff;}
+  .wrap{max-width:920px;margin:0 auto;padding:48px 56px;}
+  h1{font-size:25px;color:var(--brand);border-bottom:3px solid var(--brand);padding-bottom:14px;margin-top:0;}
+  h2{font-size:19px;color:var(--brand);margin-top:36px;padding-left:12px;border-left:5px solid var(--brand);}
+  h3{font-size:16px;color:#0f3d63;margin-top:24px;}
+  code{background:var(--bg-soft);color:#0b5cad;padding:2px 6px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:13px;}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--bg-soft);color:#0f3d63;font-weight:600;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  blockquote{margin:14px 0;padding:12px 18px;background:#eff6ff;border-left:4px solid var(--brand);color:#1e3a5f;border-radius:0 6px 6px 0;}
+  blockquote p{margin:4px 0;}
+  @media print{.wrap{max-width:none;padding:0;}body{font-size:12pt;}h2{page-break-after:avoid;}table,blockquote{page-break-inside:avoid;}}
+</style>
+</head>
+<body><div class="wrap"><h1>M1 阶段完成记录与验收清单</h1>
+<blockquote>
+<p>记录人：秦庆泽　日期：2026-10-24　依据：《软件工程-敏捷DevOps开发方法》大作业 V1.1「2.1 项目管理」</p>
+</blockquote>
+<h2>一、阶段信息</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>里程碑</td>
+<td>M1 需求分析与项目规划</td>
+</tr>
+<tr>
+<td>周期</td>
+<td>W1 · 2026-10-26 ~ 2026-11-01</td>
+</tr>
+<tr>
+<td>平台</td>
+<td>华为云 CodeArts（原 DevCloud），项目「DBlog」</td>
+</tr>
+<tr>
+<td>对应评分</td>
+<td>规划 5% + 工作项 5% + 迭代 5% = 15%</td>
+</tr>
+<tr>
+<td>结论</td>
+<td>基本达标，截图归档后判定完成</td>
+</tr>
+</tbody>
+</table>
+<h2>二、完成总览</h2>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>状态</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>需求文档（12 条用户故事）</td>
+<td>已完成</td>
+<td><code>docs/requirements.md</code></td>
+</tr>
+<tr>
+<td>规划 · 思维导图</td>
+<td>已完成</td>
+<td>截图 M1-02</td>
+</tr>
+<tr>
+<td>工作项 · 字段补全</td>
+<td>已完成</td>
+<td>截图 M1-03、M1-04</td>
+</tr>
+<tr>
+<td>迭代 · Story 排入</td>
+<td>已完成</td>
+<td>截图 M1-05</td>
+</tr>
+</tbody>
+</table>
+<h2>三、各环节详情</h2>
+<h3>3.1 需求文档</h3>
+<ul>
+<li>产出 <code>软工大作业/docs/requirements.md</code>，共 12 条用户故事：</li>
+<li>P0（5 条）：登录、发表、编辑、删除文章、发表评论</li>
+<li>P1（5 条）：文章列表、分类、标签、后台管理、评论管理</li>
+<li>P2（2 条）：暗黑模式切换、文章点赞</li>
+<li>每条含「作为…我想要…以便…」+ 可验证验收标准，覆盖三大作业点名功能。</li>
+</ul>
+<h3>3.2 规划 · 思维导图</h3>
+<ul>
+<li>结构：Epic「个人博客系统」→ 5 个 Feature（用户模块 / 文章模块 / 评论模块 / 后台管理 / 特色功能）→ 12 条 Story。</li>
+<li>层级 3 层（Epic → Feature → Story），Story 由思维导图自动生成到工作项。</li>
+<li>证据：<code>M1-02-思维导图.png</code>。</li>
+</ul>
+<h3>3.3 工作项 · 字段补全</h3>
+<ul>
+<li>12 条 Story 已生成（编号 71193024 ~ 71193038）。</li>
+<li>字段填写情况：描述、优先级/优先程度、重要程度、预计开始日期、预计结束日期、预计工时、处理人、父工作项，均已填写。</li>
+<li>证据：</li>
+<li><code>M1-03-工作项列表.png</code>（12 条 Story 列表，预计开始日期 2026-10-24）</li>
+<li><code>M1-04-Story字段.png</code>（US-12 文章点赞详情：迭代=基础与特色、日期 10-24~12-10、优先级中、重要程度重要、工时 8.00）</li>
+</ul>
+<h3>3.4 迭代 · Story 排入</h3>
+<table>
+<thead>
+<tr>
+<th>迭代</th>
+<th>计划时间</th>
+<th>排入 Story</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>核心功能</td>
+<td>2026-10-24 ~ 2026-11-24</td>
+<td>US-01 ~ US-05（5 条）</td>
+</tr>
+<tr>
+<td>基础与特色</td>
+<td>2026-10-24 ~ 2026-12-24</td>
+<td>US-06 ~ US-12（7 条）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>12 条 Story 全部排入迭代，按优先级高→低分布。</li>
+<li>证据：<code>M1-05-迭代看板.png</code>。</li>
+</ul>
+<h2>四、截图归档清单</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>文件</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td>M1-01-新建项目.png</td>
+<td>项目已创建（当前截图为工作项页，建议补项目首页）</td>
+<td>待确认</td>
+</tr>
+<tr>
+<td>02</td>
+<td>M1-02-思维导图.png</td>
+<td>思维导图三级结构</td>
+<td>合格</td>
+</tr>
+<tr>
+<td>03</td>
+<td>M1-03-工作项列表.png</td>
+<td>12 条 Story 列表（日期已填）</td>
+<td>合格</td>
+</tr>
+<tr>
+<td>04</td>
+<td>M1-04-Story字段.png</td>
+<td>US-12 详情，字段齐全</td>
+<td>合格</td>
+</tr>
+<tr>
+<td>05</td>
+<td>M1-05-迭代看板.png</td>
+<td>两个迭代及 Story</td>
+<td>合格</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>截图应归档到 <code>软工大作业/evidence/M1/</code>，命名与上表一致。</p>
+</blockquote>
+<h2>五、遗留说明</h2>
+<ol>
+<li><strong>项目名</strong>：CodeArts 中项目名为「DBlog」（教程建议「个人博客」），不影响评分，报告说明即可。</li>
+<li><strong>M1-01 截图</strong>：当前为工作项列表页，建议补一张项目首页（能看到项目名 DBlog 与成员），使「新建项目」证据更直接。</li>
+<li><strong>日期确认</strong>：建议在工作项列表中增加「预计结束日期」列，确认 12 条 Story 的结束日期均已填写（M1-04 已证明 US-12 填写完整）。</li>
+</ol>
+<h2>六、退出条件核对</h2>
+<table>
+<thead>
+<tr>
+<th>退出条件</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>需求文档 ≥10 条用户故事，三大功能覆盖</td>
+<td>✅ 12 条</td>
+</tr>
+<tr>
+<td>思维导图 ≥3 层（Epic→Feature→Story）</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>工作项字段（描述/优先级/日期/工时/重要程度）填齐</td>
+<td>✅（M1-04 佐证）</td>
+</tr>
+<tr>
+<td>≥2 个迭代，Story 按优先级排入</td>
+<td>✅ 2 迭代 / 12 条</td>
+</tr>
+<tr>
+<td>5 张截图归档到 evidence/M1</td>
+<td>⏳ 待归档</td>
+</tr>
+<tr>
+<td>阶段进度记录同步</td>
+<td>✅ 本文件</td>
+</tr>
+</tbody>
+</table>
+<h2>七、结论</h2>
+<p>M1 的需求文档与 CodeArts「规划 / 工作项 / 迭代」三环节均已完成，字段填写与迭代排入符合评分要求。<strong>待截图归档到 <code>evidence/M1/</code> 并确认结束日期后，M1 判定为「完成」</strong>，可进入 M2（架构设计与环境搭建、代码入仓库）。</p></div></body></html>
