@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>%s</title>
+<style>
+  :root{--ink:#1a1a1a;--muted:#666;--line:#e2e6ea;--brand:#185FA5;--bg-soft:#f5f8fc;}
+  *{box-sizing:border-box;}
+  body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",Arial,sans-serif;color:var(--ink);line-height:1.75;margin:0;background:#fff;}
+  .wrap{max-width:920px;margin:0 auto;padding:48px 56px;}
+  h1{font-size:25px;color:var(--brand);border-bottom:3px solid var(--brand);padding-bottom:14px;margin-top:0;}
+  h2{font-size:19px;color:var(--brand);margin-top:36px;padding-left:12px;border-left:5px solid var(--brand);}
+  h3{font-size:16px;color:#0f3d63;margin-top:24px;}
+  code{background:var(--bg-soft);color:#0b5cad;padding:2px 6px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:13px;}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--bg-soft);color:#0f3d63;font-weight:600;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  blockquote{margin:14px 0;padding:12px 18px;background:#eff6ff;border-left:4px solid var(--brand);color:#1e3a5f;border-radius:0 6px 6px 0;}
+  blockquote p{margin:4px 0;}
+  @media print{.wrap{max-width:none;padding:0;}body{font-size:12pt;}h2{page-break-after:avoid;}table,blockquote{page-break-inside:avoid;}}
+</style>
+</head>
+<body><div class="wrap"><h1>M2 本地环境验证记录</h1>
+<p>日期：2026-10-24。记录范围：M2.1 环境准备、M2.2 数据库建库、M2.3 本地启动验证。依据《M2-kickoff》第 3 节的接口检查单与第 5 节的退出条件，只记录<strong>实际执行过的命令与真实返回结果</strong>，未执行项单独列出，不做推断。</p>
+<h2>1 环境实测结果</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>要求</th>
+<th>实测</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JDK</td>
+<td>1.8</td>
+<td><code>java version "1.8.0_202"</code>（D:\java\JDK8）</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>Maven</td>
+<td>3.3+</td>
+<td><code>Apache Maven 3.6.3</code>，运行时 Java 1.8.0_202</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>5.6+</td>
+<td><code>5.7.17-log</code>，3306 LISTENING</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>MySQL 凭据</td>
+<td>可登录</td>
+<td><code>root</code> 登录成功（密码与项目默认 <code>root</code> 不同，见 4.2）</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>6379 可用</td>
+<td><code>5.0.14.1</code>（D:\Redis），<code>PING</code> → <code>PONG</code></td>
+<td>通过（本轮新装）</td>
+</tr>
+<tr>
+<td>端口 8443 / 8085</td>
+<td>空闲</td>
+<td>启动前均无监听</td>
+<td>通过</td>
+</tr>
+</tbody>
+</table>
+<p>Maven 走 <code>aliyunmaven</code> 镜像，全程无中央仓库超时。</p>
+<h2>2 数据库建库结果（M2.2）</h2>
+<p>执行命令：</p>
+<pre><code class="language-bash">mysql -u root -p --default-character-set=utf8mb4 &lt; docs/docker/mysql/dblog.sql
+mysql -u root -p --default-character-set=utf8mb4 &lt; docs/docker/mysql/init_data.sql
+</code></pre>
+<p>结果：</p>
+<ul>
+<li>表数量 <strong>22</strong>（<code>information_schema.tables where table_schema='dblog'</code>）。</li>
+<li>表清单：<code>biz_ad</code>、<code>biz_article</code>、<code>biz_article_look</code>、<code>biz_article_love</code>、<code>biz_article_tags</code>、<code>biz_comment</code>、<code>biz_file</code>、<code>biz_page</code>、<code>biz_tags</code>、<code>biz_type</code>、<code>sys_config</code>、<code>sys_link</code>、<code>sys_log</code>、<code>sys_notice</code>、<code>sys_resources</code>、<code>sys_role</code>、<code>sys_role_resources</code>、<code>sys_social_config</code>、<code>sys_template</code>、<code>sys_update_recorde</code>、<code>sys_user</code>、<code>sys_user_role</code>。</li>
+<li>初始数据行数：文章 2、评论 1、标签 5、分类 3、用户 3、角色 3、权限资源 90、配置 37。</li>
+<li>字符集 <code>utf8mb4</code> / <code>utf8mb4_unicode_ci</code>，两个脚本均无报错。</li>
+</ul>
+<h2>3 编译结果（M2.3 第一层）</h2>
+<pre><code class="language-bash">mvn clean package -Dmaven.test.skip=true
+</code></pre>
+<p>Reactor 汇总（真实输出）：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>结果</th>
+<th>耗时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>blog</td>
+<td>SUCCESS</td>
+<td>1.910 s</td>
+</tr>
+<tr>
+<td>blog-file</td>
+<td>SUCCESS</td>
+<td>28.845 s</td>
+</tr>
+<tr>
+<td>blog-core</td>
+<td>SUCCESS</td>
+<td>05:25 min</td>
+</tr>
+<tr>
+<td>blog-web</td>
+<td>SUCCESS</td>
+<td>36.216 s</td>
+</tr>
+<tr>
+<td>blog-admin</td>
+<td>SUCCESS</td>
+<td>24.777 s</td>
+</tr>
+<tr>
+<td>blog-codegen</td>
+<td>SUCCESS</td>
+<td>13.463 s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>BUILD SUCCESS，总耗时 07:18 min</strong>。产物：<code>blog-web/target/blog-web.jar</code>（约 64 MB）、<code>blog-admin/target/blog-admin.jar</code>（约 61 MB）。</p>
+<h2>4 启动结果（M2.3 第二层）</h2>
+<h3>4.1 实际访问结果</h3>
+<table>
+<thead>
+<tr>
+<th>端点</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http://127.0.0.1:8443/</code></td>
+<td>HTTP 200，<code>&lt;title&gt;OneBlog开源博客&lt;/title&gt;</code>，页面渲染出真实文章《OneBlog简介》《OneBlog简介（未开启评论）》，分类「前端技术 / 后端技术 / 其他文章」正常，无异常堆栈</td>
+</tr>
+<tr>
+<td><code>http://127.0.0.1:8085/</code></td>
+<td>HTTP 302 → <code>/passport/login/</code>，登录页 HTTP 200</td>
+</tr>
+<tr>
+<td><code>POST /passport/signin</code></td>
+<td>返回 <code>{"status":500,"message":"帐号或密码不正确！您还剩5次重试的机会"}</code>（故意用错口令），说明 Shiro Realm 已连上 <code>sys_user</code> 表、认证链路正常</td>
+</tr>
+</tbody>
+</table>
+<p>前台页面能渲染出数据库里的两篇文章，等于反证 <code>dblog</code> 连接、MyBatis 映射、Redis 缓存三项同时可用。</p>
+<h3>4.2 本轮踩到并解决的三个坑</h3>
+<p><strong>坑 1：MySQL 的 root 密码不是项目默认的 <code>root</code>。</strong>
+<code>application-center.yml</code> 第 11 行写的是 <code>${ONEBLOG_DATASOURCE_PASSWORD:root}</code>，默认值 <code>root</code> 与本机实际密码不符，直接启动会认证失败。处理方式：用环境变量覆盖，<strong>不改文件、不把密码写进仓库</strong>：</p>
+<pre><code class="language-bash">set ONEBLOG_DATASOURCE_PASSWORD=&lt;本地 root 密码&gt;
+</code></pre>
+<p><strong>坑 2：Redis 未安装，且 GitHub Release 下载被拦。</strong>
+本机无 redis 进程、6379 无监听；<code>curl</code> 直连 GitHub Release 报 <code>schannel: server closed abruptly</code>，<code>winget install Redis.Redis</code> 报 <code>InternetOpenUrl() failed 0x80072efd</code>。处理方式：经镜像 <code>ghfast.top</code> 下载 <code>Redis-x64-5.0.14.1.zip</code>（12.6 MB），解压到 <code>D:\Redis</code>，用 <code>redis.windows.conf</code> 启动（<code>bind 127.0.0.1</code>、<code>port 6379</code>、无密码），<code>redis-cli ping</code> 返回 <code>PONG</code>。
+注意：启动参数 <code>--maxheap 512mb</code> 在 5.x 上不合法，会报 <code>unknown argument: maxheap</code>，不要加。</p>
+<p><strong>坑 3：端口被环境变量覆盖成 62781。</strong>
+首次启动报 <code>PortInUseException: Port 62781 is already in use</code>，而 <code>application.yml</code> 里写的是 8443。原因是本机存在环境变量 <code>SERVER__PORT=62781</code>，Spring Boot 的宽松绑定把 <code>SERVER__PORT</code> 映射为 <code>server.port</code>，<strong>优先级高于 yml</strong>。处理方式：启动时显式指定，如 <code>set SERVER__PORT=8443</code>。
+这条是本轮最容易被误判成「代码有问题」的坑：日志里没有数据库或模板错误，只有一句端口占用。</p>
+<h2>5 可复现方式</h2>
+<p>仓库新增两个脚本，避免每次手敲环境变量：</p>
+<table>
+<thead>
+<tr>
+<th>脚本</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/dev-start.bat</code></td>
+<td>检查并拉起 Redis → 检查 jar → 交互输入数据库密码（不回显、不落盘）→ 分别以 8443 / 8085 启动前台与后台</td>
+</tr>
+<tr>
+<td><code>scripts/dev-stop.bat</code></td>
+<td>按端口找到 PID 并停止 8443 / 8085 上的进程（不动 Redis）</td>
+</tr>
+</tbody>
+</table>
+<p>首次使用前需先执行一次 <code>mvn clean package -Dmaven.test.skip=true</code>。</p>
+<h2>6 未完成项（不得视为已通过）</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>状态</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M2.4 架构与数据库设计文档</td>
+<td>未开始</td>
+<td>归吴凯阳，<code>docs/architecture.md</code></td>
+</tr>
+<tr>
+<td>M2.5 代码入 CodeArts</td>
+<td>未开始</td>
+<td>需在 CodeArts「代码托管」导入 <code>https://github.com/qinlove-hub/DBlog.git</code>，需账号登录</td>
+</tr>
+<tr>
+<td>M2.6 五张证据截图</td>
+<td>未归档</td>
+<td><code>evidence/M2/</code> 已建目录；本轮验证结果可用浏览器/控制台重放后截图</td>
+</tr>
+<tr>
+<td>真实口令登录后台</td>
+<td>待人工确认</td>
+<td>认证链路已验证通，但成功登录需在浏览器手动点一次并截图</td>
+</tr>
+</tbody>
+</table>
+<h2>7 结论</h2>
+<p>M2.1 / M2.2 / M2.3 三项的技术验证已完成：环境四项齐全、<code>dblog</code> 22 表与初始数据就绪、六模块 BUILD SUCCESS、前台 8443 渲染真实文章、后台 8085 登录页可达且认证链路正常。M2.5 代码入仓与 M2.6 截图归档尚未完成，因此 <strong>M2 整体状态仍为「进行中」</strong>，按《M2-kickoff》第 5 节的规则不进入 M3。</p></div></body></html>
