@@ -1,0 +1,31 @@
++--------------------+
+| Tables_in_dblog    |
++--------------------+
+| biz_ad             |
+| biz_article        |
+| biz_article_look   |
+| biz_article_love   |
+| biz_article_tags   |
+| biz_comment        |
+| biz_file           |
+| biz_page           |
+| biz_tags           |
+| biz_type           |
+| sys_config         |
+| sys_link           |
+| sys_log            |
+| sys_notice         |
+| sys_resources      |
+| sys_role           |
+| sys_role_resources |
+| sys_social_config  |
+| sys_template       |
+| sys_update_recorde |
+| sys_user           |
+| sys_user_role      |
++--------------------+
++-------------+
+| table_count |
++-------------+
+|          22 |
++-------------+

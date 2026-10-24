@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>%s</title>
+<style>
+  :root{--ink:#1a1a1a;--muted:#666;--line:#e2e6ea;--brand:#185FA5;--bg-soft:#f5f8fc;}
+  *{box-sizing:border-box;}
+  body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",Arial,sans-serif;color:var(--ink);line-height:1.75;margin:0;background:#fff;}
+  .wrap{max-width:920px;margin:0 auto;padding:48px 56px;}
+  h1{font-size:25px;color:var(--brand);border-bottom:3px solid var(--brand);padding-bottom:14px;margin-top:0;}
+  h2{font-size:19px;color:var(--brand);margin-top:36px;padding-left:12px;border-left:5px solid var(--brand);}
+  h3{font-size:16px;color:#0f3d63;margin-top:24px;}
+  code{background:var(--bg-soft);color:#0b5cad;padding:2px 6px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:13px;}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--bg-soft);color:#0f3d63;font-weight:600;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  blockquote{margin:14px 0;padding:12px 18px;background:#eff6ff;border-left:4px solid var(--brand);color:#1e3a5f;border-radius:0 6px 6px 0;}
+  blockquote p{margin:4px 0;}
+  @media print{.wrap{max-width:none;padding:0;}body{font-size:12pt;}h2{page-break-after:avoid;}table,blockquote{page-break-inside:avoid;}}
+</style>
+</head>
+<body><div class="wrap"><h1>M2 完成记录与验收清单</h1>
+<p>日期：2026-10-24。本记录对应《M2-kickoff》第 5 节的 6 条退出条件，只记录<strong>实际发生并可复核</strong>的结果；截图编号与 <code>软工大作业/evidence/M2/</code> 下的文件一一对应。</p>
+<h2>1 完成总览</h2>
+<table>
+<thead>
+<tr>
+<th>子任务</th>
+<th>建议 R</th>
+<th>状态</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M2.1 环境准备</td>
+<td>秦庆泽</td>
+<td>完成</td>
+<td>环境五项实测（见《M2-本地环境验证记录》第 1 节）</td>
+</tr>
+<tr>
+<td>M2.2 数据库建库</td>
+<td>秦庆泽</td>
+<td>完成</td>
+<td><code>M2-04-数据库22张表.png</code> + <code>M2-04-show-tables.txt</code></td>
+</tr>
+<tr>
+<td>M2.3 本地启动验证</td>
+<td>秦庆泽</td>
+<td>完成</td>
+<td><code>M2-01-编译BUILD-SUCCESS.png</code>、<code>M2-02-前台首页.png</code>、<code>M2-03-后台控制台登录后.png</code></td>
+</tr>
+<tr>
+<td>M2.4 架构与数据库设计文档</td>
+<td>吴凯阳</td>
+<td><strong>未开始</strong></td>
+<td>提示词已交付（<code>M2-kickoff.md</code> §4），待产出 <code>docs/architecture.md</code></td>
+</tr>
+<tr>
+<td>M2.5 代码入 CodeArts</td>
+<td>秦庆泽</td>
+<td>完成</td>
+<td><code>M2-05-CodeArts代码仓库.png</code></td>
+</tr>
+<tr>
+<td>M2.6 证据留痕</td>
+<td>两人</td>
+<td>完成</td>
+<td><code>evidence/M2/</code> 下 5 张截图 + 2 份命令行输出存档</td>
+</tr>
+</tbody>
+</table>
+<p>技术验证部分（M2.1 / M2.2 / M2.3 / M2.5）已全部落地；M2.4 是文档产出，尚未交付。</p>
+<h2>2 各环节详情</h2>
+<h3>2.1 环境（M2.1）</h3>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>版本 / 位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JDK</td>
+<td>1.8.0_202，<code>D:\java\JDK8</code></td>
+</tr>
+<tr>
+<td>Maven</td>
+<td>3.6.3，<code>D:\Maven 3.6.3</code>，已配 aliyunmaven 镜像</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>5.7.17，3306，库 <code>dblog</code></td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>5.0.14.1，<code>D:\Redis</code>，127.0.0.1:6379，无密码</td>
+</tr>
+<tr>
+<td>端口</td>
+<td>前台 8443、后台 8085</td>
+</tr>
+</tbody>
+</table>
+<p>两处与默认配置不一致，已在《M2-本地环境验证记录》4.2 节记录处理方式：MySQL root 密码非项目默认值（用环境变量 <code>ONEBLOG_DATASOURCE_PASSWORD</code> 覆盖，不落盘）；本机存在 <code>SERVER__PORT</code> 环境变量会覆盖 yml 端口（启动时显式指定）。</p>
+<h3>2.2 数据库（M2.2）</h3>
+<ul>
+<li>表数量 <strong>22</strong>，字符集 <code>utf8mb4</code> / <code>utf8mb4_unicode_ci</code>。</li>
+<li>初始数据：文章 2、评论 1、标签 5、分类 3、用户 3、角色 3、权限资源 90、配置 37。</li>
+<li>建库脚本 <code>docs/docker/mysql/dblog.sql</code> + <code>init_data.sql</code>，均无报错。</li>
+</ul>
+<h3>2.3 编译与启动（M2.3）</h3>
+<ul>
+<li><code>mvn clean package -Dmaven.test.skip=true</code>：6 模块全部 SUCCESS，<code>Total time: 20.776 s</code>，<code>Finished at: 2026-10-24T22:03:56+08:00</code>。</li>
+<li>前台 <code>http://127.0.0.1:8443/</code>：HTTP 200，两篇文章正常渲染，右侧统计「文章 2 / 标签 5 / 分类 3」与数据库一致。</li>
+<li>后台 <code>http://127.0.0.1:8085/passport/login/</code>：以 <code>root</code> 登录成功，进入控制台，左侧菜单（首页、文章管理、网站管理、权限管理、用户管理、实验室）完整，仪表盘数字与库一致。</li>
+</ul>
+<h3>2.4 代码托管（M2.5）</h3>
+<ul>
+<li>华为云 CodeArts → 项目 <code>DBlog</code> → 代码托管，Repository ID <code>3103913</code>。</li>
+<li>仓库规模：<strong>12.52 MB、610 个文件、1 个分支（main）、0 个 Tag</strong>。</li>
+<li>文件树可见全部模块：<code>blog-admin</code>、<code>blog-codegen</code>、<code>blog-core</code>、<code>blog-file</code>、<code>blog-web</code>，另有 <code>docs</code>、<code>scripts</code>、<code>软工大作业</code>、<code>CONTRIBUTING.md</code>、<code>README.md</code>、<code>LICENSE</code>。</li>
+<li>提交历史完整保留原作者 <code>yadong.zhang</code> 的历史提交与本项目新增提交。</li>
+</ul>
+<h2>3 截图清单</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>文件</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M2-01</td>
+<td><code>M2-01-编译BUILD-SUCCESS.png</code></td>
+<td>6 模块 Reactor Summary + BUILD SUCCESS + 时间戳 + Exit code 0</td>
+<td>有效</td>
+</tr>
+<tr>
+<td>M2-02</td>
+<td><code>M2-02-前台首页.png</code></td>
+<td>地址栏 8443，两篇文章，右侧统计与库一致</td>
+<td>有效</td>
+</tr>
+<tr>
+<td>M2-03</td>
+<td><code>M2-03-后台控制台登录后.png</code></td>
+<td>地址栏 8085，右上角 root，菜单与仪表盘数据</td>
+<td>有效</td>
+</tr>
+<tr>
+<td>M2-04</td>
+<td><code>M2-04-数据库22张表.png</code></td>
+<td>命令行 <code>show tables</code> + <code>table_count = 22</code></td>
+<td>有效</td>
+</tr>
+<tr>
+<td>M2-05</td>
+<td><code>M2-05-CodeArts代码仓库.png</code></td>
+<td>CodeArts 仓库首页，模块目录 + 提交历史 + 12.52 MB</td>
+<td>有效</td>
+</tr>
+</tbody>
+</table>
+<p>配套文本证据：<code>M2-01-build-log.txt</code>（编译输出存档）、<code>M2-04-show-tables.txt</code>（表清单存档）。</p>
+<h2>4 退出条件核对</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>退出条件</th>
+<th>结果</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>mvn clean package</code> 编译通过（BUILD SUCCESS），产物可运行</td>
+<td>满足</td>
+<td>M2-01 截图 + M2-01-build-log.txt</td>
+</tr>
+<tr>
+<td>2</td>
+<td>前台 <code>http://127.0.0.1:8443</code> 可访问并显示文章首页</td>
+<td>满足</td>
+<td>M2-02 截图</td>
+</tr>
+<tr>
+<td>3</td>
+<td>后台 <code>http://127.0.0.1:8085</code> 可用 <code>root</code> 登录成功</td>
+<td>满足</td>
+<td>M2-03 截图</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>dblog</code> 有 22 张表且已导入初始数据</td>
+<td>满足</td>
+<td>M2-04 截图 + M2-04-show-tables.txt</td>
+</tr>
+<tr>
+<td>5</td>
+<td>CodeArts 代码托管中可见完整代码</td>
+<td>满足</td>
+<td>M2-05 截图</td>
+</tr>
+<tr>
+<td>6</td>
+<td>5 张截图归档到 <code>evidence/M2/</code>，阶段进度按事实同步</td>
+<td>满足</td>
+<td>本目录文件清单</td>
+</tr>
+</tbody>
+</table>
+<p><strong>6 / 6 全部满足。</strong></p>
+<h2>5 遗留说明与风险</h2>
+<p><strong>① 提交作者显示 <code>qingzan20-lab</code>，与 GitHub 账号 <code>qinlove-hub</code> 不一致。</strong>
+本地 <code>git config user.name</code> 为 <code>qingzan20-lab</code>、<code>user.email</code> 为 <code>qingzan20@gmail.com</code>，导致提交作者名与真实账号对不上，教师在查看提交留痕时可能产生疑问。建议在 M3 开始提交前先修正：</p>
+<pre><code class="language-bash">git config user.name &quot;qinlove-hub&quot;
+git config user.email &quot;&lt;GitHub 账号已验证的邮箱或 noreply 地址&gt;&quot;
+</code></pre>
+<p>历史提交已随导入进入 CodeArts，改写成本高且无必要，本轮不追溯。</p>
+<p><strong>② 本地有 1 个提交未推送到 GitHub。</strong>
+<code>1caa723</code>（修复 bat 脚本换行与编码）因当时 <code>github.com:443</code> 不可达而未能推送，CodeArts 中亦不含该提交。该提交仅影响本地开发脚本，不影响代码正确性与评分。网络恢复后补推即可。</p>
+<p><strong>③ M2.4 架构与数据库设计文档尚未产出。</strong>
+归吴凯阳。该文档是 M3 开发与最终报告（25% 总结描述）的输入，建议在进入 M3 前一周补齐，不阻塞 M3 编码。</p>
+<p><strong>④ 两处本地改动仍未提交，属有意保留。</strong>
+<code>blog-core/.../application-center.yml</code>（Redis 密码本地注释）与 <code>blog-web/pom.xml</code>（阿里云 OSS 依赖，M6 部署到华为云时需换 OBS）。</p>
+<h2>6 结论</h2>
+<p>M2 的 6 条退出条件全部满足，环境、数据库、编译、启动、代码托管五条链路均有真实结果与截图证据，<strong>M2 技术验证判定完成，可进入 M3（迭代 1：登录 / 文章 / 评论 + 代码检查）</strong>。</p>
+<p>M2.4 架构文档作为并行文档任务继续跟踪，不改变上述判定；若在进入 M4 改造前仍未交付，则需在阶段记录中标注为欠账。</p></div></body></html>
