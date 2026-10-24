@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>%s</title>
+<style>
+  :root{--ink:#1a1a1a;--muted:#666;--line:#e2e6ea;--brand:#185FA5;--bg-soft:#f5f8fc;}
+  *{box-sizing:border-box;}
+  body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",Arial,sans-serif;color:var(--ink);line-height:1.75;margin:0;background:#fff;}
+  .wrap{max-width:920px;margin:0 auto;padding:48px 56px;}
+  h1{font-size:25px;color:var(--brand);border-bottom:3px solid var(--brand);padding-bottom:14px;margin-top:0;}
+  h2{font-size:19px;color:var(--brand);margin-top:36px;padding-left:12px;border-left:5px solid var(--brand);}
+  h3{font-size:16px;color:#0f3d63;margin-top:24px;}
+  code{background:var(--bg-soft);color:#0b5cad;padding:2px 6px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:13px;}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--bg-soft);color:#0f3d63;font-weight:600;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  blockquote{margin:14px 0;padding:12px 18px;background:#eff6ff;border-left:4px solid var(--brand);color:#1e3a5f;border-radius:0 6px 6px 0;}
+  blockquote p{margin:4px 0;}
+  @media print{.wrap{max-width:none;padding:0;}body{font-size:12pt;}h2{page-break-after:avoid;}table,blockquote{page-break-inside:avoid;}}
+</style>
+</head>
+<body><div class="wrap"><h1>M2 环境搭建保姆级操作清单</h1>
+<blockquote>
+<p>目标：把 OneBlog(DBlog) 在<strong>本地完整跑起来</strong>，并把代码导入<strong>华为云 CodeArts 代码仓库</strong>。
+版本：2026-10-24 · 对应里程碑 M2（架构设计与环境搭建）
+说明：本项目是 Windows 环境，命令按 Git Bash / CMD 给出。</p>
+</blockquote>
+<h2>0 M2 要达成什么</h2>
+<table>
+<thead>
+<tr>
+<th>目标</th>
+<th>完成标志</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本地环境跑通</td>
+<td>浏览器能打开前台 <code>http://127.0.0.1:8443</code>，看到博客首页文章</td>
+</tr>
+<tr>
+<td>后台能登录</td>
+<td>打开 <code>http://127.0.0.1:8085</code>，用 root 登录成功</td>
+</tr>
+<tr>
+<td>数据库就绪</td>
+<td>MySQL 里 <code>dblog</code> 库有 22 张表</td>
+</tr>
+<tr>
+<td>代码入 CodeArts</td>
+<td>CodeArts 代码托管里能看到完整代码</td>
+</tr>
+</tbody>
+</table>
+<h2>1 前置：软件安装与版本确认</h2>
+<p>先用下面命令确认版本，<strong>JDK 必须是 8</strong>（SpringBoot 2.3.5 对 JDK 11+ 兼容性差，容易踩坑）。</p>
+<table>
+<thead>
+<tr>
+<th>软件</th>
+<th>版本要求</th>
+<th>检查命令</th>
+<th>期望输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JDK</td>
+<td><strong>1.8</strong>（必须）</td>
+<td><code>java -version</code></td>
+<td><code>java version "1.8.x"</code></td>
+</tr>
+<tr>
+<td>Maven</td>
+<td>3.3 以上</td>
+<td><code>mvn -v</code></td>
+<td><code>Apache Maven 3.x</code></td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>5.6 以上</td>
+<td><code>mysql --version</code></td>
+<td><code>MySQL 5.7/8.0</code></td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>任意</td>
+<td><code>redis-cli ping</code></td>
+<td><code>PONG</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>没装的话：JDK8 用 <code>winget install EclipseAdoptium.Temurin.8.JDK</code>；MySQL 用 <code>winget install Oracle.MySQL</code>；Redis 在 Windows 可用 Memurai 或 Redis for Windows。装完重启终端再验证。</p>
+</blockquote>
+<h2>2 建数据库（3 步）</h2>
+<p>关键提醒：<strong>真正的 SQL 在 <code>docs/docker/mysql/</code> 下</strong>，<code>docs/db/</code> 里的是占位文件（内容只有一句"请参考 docker/mysql"），导错就白忙。</p>
+<ol>
+<li>确认 MySQL 已启动（服务里找 MySQL 服务，或 <code>net start mysql</code>）。</li>
+<li>导入建库建表脚本（<strong>自动创建 dblog 库 + 22 张表</strong>）：</li>
+</ol>
+<pre><code class="language-bash">cd /c/Users/qinqingze/Desktop/DBlog
+mysql -u root -p &lt; docs/docker/mysql/dblog.sql
+</code></pre>
+<ol start="3">
+<li>导入初始数据（文章、管理员账号、菜单等）：</li>
+</ol>
+<pre><code class="language-bash">mysql -u root -p &lt; docs/docker/mysql/init_data.sql
+</code></pre>
+<ol start="4">
+<li>验证（应看到 22 张表）：</li>
+</ol>
+<pre><code class="language-bash">mysql -u root -p -e &quot;use dblog; show tables;&quot;
+</code></pre>
+<blockquote>
+<p>也可以用 Navicat / DataGrip 直接打开这两个 SQL 文件执行，效果一样。若你的 MySQL root 密码不是 <code>root</code>，先改配置（见第 4 步）或导入时用它。</p>
+</blockquote>
+<h2>3 启动 Redis</h2>
+<ul>
+<li>Windows 启动 Redis 后，用 <code>redis-cli ping</code> 验证返回 <code>PONG</code>。</li>
+<li>本项目 Redis 用于缓存和 Shiro 会话，<strong>没启动会导致登录失败或启动报错</strong>。</li>
+</ul>
+<h2>4 检查配置（application-center.yml）</h2>
+<p>配置文件：<code>blog-core/src/main/resources/config/application-center.yml</code>。默认值如下，按你本机实际情况核对：</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据库地址</td>
+<td><code>127.0.0.1:3306/dblog</code></td>
+<td>库名固定 dblog</td>
+</tr>
+<tr>
+<td>数据库账号</td>
+<td><code>root / root</code></td>
+<td>密码不是 root 就要改</td>
+</tr>
+<tr>
+<td>Redis 地址</td>
+<td><code>127.0.0.1:6379</code></td>
+<td>database=1</td>
+</tr>
+<tr>
+<td>Redis 密码</td>
+<td>空（已被注释）</td>
+<td>本地 Redis 无密码则不用动</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>若你的数据库密码不是 <code>root</code>，<strong>推荐用环境变量</strong>而不是改文件（避免把密码提交到 git）：
+<code>set ONEBLOG_DATASOURCE_PASSWORD=你的密码</code>（CMD）或 <code>export ONEBLOG_DATASOURCE_PASSWORD=你的密码</code>（Git Bash）</p>
+</blockquote>
+<h2>5 编译并启动</h2>
+<p><strong>方式一：命令行（推荐，最稳）</strong></p>
+<pre><code class="language-bash">cd /c/Users/qinqingze/Desktop/DBlog
+mvn clean package -Dmaven.test.skip=true
+java -jar blog-web/target/blog-web.jar
+</code></pre>
+<p>看到 <code>Started BlogWebApplication</code> 或类似日志即启动成功。</p>
+<p><strong>方式二：IDEA 直接运行</strong></p>
+<p>用 IDEA 打开项目，等 Maven 依赖下载完，直接运行 <code>blog-web/src/main/java/com/zyd/blog/BlogWebApplication.java</code>。</p>
+<p><strong>方式三：Maven 插件</strong></p>
+<pre><code class="language-bash">cd blog-web
+mvn spring-boot:run
+</code></pre>
+<h2>6 验证启动结果</h2>
+<table>
+<thead>
+<tr>
+<th>入口</th>
+<th>地址</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前台</td>
+<td><code>http://127.0.0.1:8443</code></td>
+<td>能看到博客首页和示例文章</td>
+</tr>
+<tr>
+<td>后台</td>
+<td><code>http://127.0.0.1:8085</code></td>
+<td>登录页，账号 <code>root</code> / 密码 <code>123456</code></td>
+</tr>
+</tbody>
+</table>
+<p>后台账号（来自初始数据）：超级管理员 <code>root / 123456</code>，普通管理员 <code>admin / 123456</code>，评论审核 <code>comment-admin / 123456</code>。</p>
+<h2>7 代码入 CodeArts 仓库（M2 关键留痕）</h2>
+<p><strong>方式一：从 GitHub 导入（推荐，最省事）</strong></p>
+<ol>
+<li>进入 CodeArts 项目「DBlog」→ 左侧 <strong>代码 &gt; 代码托管</strong>。</li>
+<li>点 <strong>新建仓库</strong> → 选 <strong>导入仓库</strong> → 来源选 <strong>GitHub</strong>。</li>
+<li>填 GitHub 仓库地址 <code>https://github.com/qinlove-hub/DBlog.git</code>，按提示授权。</li>
+<li>导入完成后，仓库里能看到完整代码与提交历史。</li>
+</ol>
+<p><strong>方式二：本地直接推（GitHub 导入失败时用）</strong></p>
+<ol>
+<li>CodeArts 代码托管里新建一个<strong>空仓库</strong>，拿到仓库地址。</li>
+<li>本地加一个远程并推送：</li>
+</ol>
+<pre><code class="language-bash">cd /c/Users/qinqingze/Desktop/DBlog
+git remote add codearts &lt;CodeArts仓库地址&gt;
+git push codearts main
+</code></pre>
+<h2>8 M2 截图清单（交证据用）</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>截图内容</th>
+<th>文件名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td>编译成功（mvn 输出 BUILD SUCCESS）</td>
+<td>M2-01-编译成功.png</td>
+</tr>
+<tr>
+<td>02</td>
+<td>前台首页（8443 能看到文章）</td>
+<td>M2-02-前台首页.png</td>
+</tr>
+<tr>
+<td>03</td>
+<td>后台登录成功（8085 进后台）</td>
+<td>M2-03-后台登录.png</td>
+</tr>
+<tr>
+<td>04</td>
+<td>数据库 22 张表（show tables 或 Navicat）</td>
+<td>M2-04-数据库表.png</td>
+</tr>
+<tr>
+<td>05</td>
+<td>CodeArts 代码仓库（代码已导入）</td>
+<td>M2-05-CodeArts仓库.png</td>
+</tr>
+</tbody>
+</table>
+<p>存到 <code>软工大作业/evidence/M2/</code>。</p>
+<h2>9 常见坑</h2>
+<ol>
+<li><strong>JDK 不是 8</strong>：编译报 <code>不支持的类文件版本</code> 或启动异常 → 装 JDK8 并设 <code>JAVA_HOME</code>。</li>
+<li><strong>SQL 导错文件</strong>：<code>docs/db/*.sql</code> 是占位，必须用 <code>docs/docker/mysql/*.sql</code>。</li>
+<li><strong>Redis 没启动</strong>：启动报连接拒绝、或后台登录一直失败 → 先 <code>redis-cli ping</code> 确认 PONG。</li>
+<li><strong>数据库密码不对</strong>：报 <code>Access denied for user 'root'</code> → 用环境变量 <code>ONEBLOG_DATASOURCE_PASSWORD</code> 覆盖。</li>
+<li><strong>日志路径是 Linux 路径</strong>：<code>application-dev.yml</code> 里日志和 Tomcat 目录写的是 <code>/var/tmp/oneblog/...</code>，Windows 上会落到当前盘根的 <code>\var\tmp\</code>，一般能自动创建；若报权限错，改成 <code>C:/temp/oneblog</code> 即可。</li>
+<li><strong>端口被占</strong>：8443 或 8085 被占用 → 换端口或关掉占用进程（<code>netstat -ano | findstr 8443</code>）。</li>
+<li><strong>Maven 依赖下载慢</strong>：配阿里云镜像（<code>~/.m2/settings.xml</code> 加 <code>&lt;mirror&gt;</code>），否则第一次构建很慢。</li>
+</ol>
+<h2>10 完成判据</h2>
+<p>M2 完成 = 以下全部满足：</p>
+<ol>
+<li>本地 <code>mvn clean package</code> 编译通过；</li>
+<li>前台 8443、后台 8085 都能正常访问，root/123456 可登录；</li>
+<li>数据库 dblog 有 22 张表且有初始数据；</li>
+<li>代码已进入 CodeArts 代码仓库；</li>
+<li>5 张截图归档到 <code>evidence/M2/</code>。</li>
+</ol></div></body></html>
